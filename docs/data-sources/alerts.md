@@ -36,5 +36,3 @@ data "mixtool_alerts" "example" {
 
 - `alerts` (String) Generated Prometheus alerts based on the given mixins
 - `id` (String) The ID of this resource.
-
-

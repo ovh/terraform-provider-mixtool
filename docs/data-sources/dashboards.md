@@ -36,5 +36,3 @@ data "mixtool_dashboards" "example" {
 
 - `dashboards` (Map of String)
 - `id` (String) The ID of this resource.
-
-
