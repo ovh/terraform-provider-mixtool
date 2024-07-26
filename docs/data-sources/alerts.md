@@ -3,12 +3,12 @@
 page_title: "mixtool_alerts Data Source - terraform-provider-mixtool"
 subcategory: ""
 description: |-
-  Read mixin and render alerts as json using mixtool
+  Read mixin and render alerts as YAML using mixtool
 ---
 
 # mixtool_alerts (Data Source)
 
-Read mixin and render alerts as json using mixtool
+Read mixin and render alerts as YAML using mixtool
 
 ## Example Usage
 
@@ -26,7 +26,7 @@ data "mixtool_alerts" "example" {
 
 ### Required
 
-- `source` (String) Source jsonnet file.
+- `source` (String) Source Jsonnet file.
 
 ### Optional
 
@@ -35,4 +35,4 @@ data "mixtool_alerts" "example" {
 ### Read-Only
 
 - `alerts` (String) Generated Prometheus alerts based on the given mixins
-- `id` (String) The ID of this resource.
+- `id` (String) sha256 sum of the Jsonnet file

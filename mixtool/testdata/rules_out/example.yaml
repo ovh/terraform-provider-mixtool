@@ -1,5 +1,0 @@
-groups:
-    - name: test.rules
-      rules:
-        - expr: rate(requests_total{job="myjob"}[5m])
-          record: instance_path:requests:rate5m

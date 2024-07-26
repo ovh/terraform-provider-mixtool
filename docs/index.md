@@ -13,7 +13,7 @@ description: |-
 ## Example Usage
 
 ```terraform
-provider "mixtool" {
+provider "ovh/mixtool" {
   # mixtool does not take any configuration
 }
 ```

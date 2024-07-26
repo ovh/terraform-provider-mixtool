@@ -3,12 +3,12 @@
 page_title: "mixtool_rules Data Source - terraform-provider-mixtool"
 subcategory: ""
 description: |-
-  Read mixin and render rules as json using mixtool
+  Read mixin and render rules as YAML using mixtool
 ---
 
 # mixtool_rules (Data Source)
 
-Read mixin and render rules as json using mixtool
+Read mixin and render rules as YAML using mixtool
 
 ## Example Usage
 
@@ -26,7 +26,7 @@ data "mixtool_rules" "example" {
 
 ### Required
 
-- `source` (String) Source jsonnet file.
+- `source` (String) Source Jsonnet file.
 
 ### Optional
 
@@ -34,5 +34,5 @@ data "mixtool_rules" "example" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
-- `rules` (String) Generated Prometheus alerts based on the given mixins
+- `id` (String) sha256 sum of the Jsonnet file
+- `rules` (String) Generated Prometheus rules based on the given mixins
