@@ -3,12 +3,12 @@
 page_title: "mixtool_dashboards Data Source - terraform-provider-mixtool"
 subcategory: ""
 description: |-
-  Read mixin and render dashboards as json using mixtool
+  Read mixin and render dashboards as JSON using mixtool
 ---
 
 # mixtool_dashboards (Data Source)
 
-Read mixin and render dashboards as json using mixtool
+Read mixin and render dashboards as JSON using mixtool
 
 ## Example Usage
 
@@ -26,7 +26,7 @@ data "mixtool_dashboards" "example" {
 
 ### Required
 
-- `source` (String) Source jsonnet file.
+- `source` (String) Source Jsonnet file.
 
 ### Optional
 
@@ -35,4 +35,4 @@ data "mixtool_dashboards" "example" {
 ### Read-Only
 
 - `dashboards` (Map of String)
-- `id` (String) The ID of this resource.
+- `id` (String) sha256 sum of the Jsonnet file
