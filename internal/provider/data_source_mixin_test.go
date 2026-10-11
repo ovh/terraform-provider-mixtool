@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/compare"
@@ -45,6 +46,36 @@ func TestAccMixinDataSource_idTracksContent(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestAccMixinDataSource_errors(t *testing.T) {
+	dir := t.TempDir()
+	write := func(name, content string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	cases := map[string]struct{ source, cause string }{
+		"missing": {filepath.Join(dir, "missing.libsonnet"), `couldn't\s+open\s+import\s+"[^"]*missing\.libsonnet"`},
+		"syntax":  {write("syntax.libsonnet", `{ prometheusAlerts: `), `Unexpected\s+end\s+of\s+file`},
+		"import":  {write("import.libsonnet", `(import "nope.libsonnet") + {}`), `couldn't\s+open\s+import\s+"nope\.libsonnet"`},
+	}
+
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config:      testAccMixinDataSourceConfig_alerts(tc.source),
+						ExpectError: regexp.MustCompile(`(?s)Error generating alerts.*` + tc.cause),
+					},
+				},
+			})
+		})
+	}
 }
 
 func testAccCheckMixinIDIsOutputHash(name, output string) resource.TestCheckFunc {
