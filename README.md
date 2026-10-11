@@ -2,6 +2,20 @@
 
 Terraform provider for generating JSON documents using [mixtool](https://github.com/monitoring-mixins/mixtool) and jsonnet templates. It initially aimed to rendering Grafana dashboards using grafonnet library.
 
+## Usage
+
+The provider renders the alerts, rules and dashboards of a mixin. Use the `mixtool_alerts`, `mixtool_rules` and `mixtool_dashboards` data sources:
+
+```terraform
+data "mixtool_alerts" "example" {
+  source       = "${path.module}/mixin.libsonnet"
+  jsonnet_path = ["${path.module}/vendor"]
+  lint         = true
+}
+```
+
+If you set `lint = true`, the plan fails when `mixtool lint` reports a finding. The [documentation](./docs) describes each attribute.
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 1.1.6

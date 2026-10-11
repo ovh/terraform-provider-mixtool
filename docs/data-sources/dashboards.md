@@ -29,6 +29,7 @@ data "mixtool_dashboards" "example" {
 ### Optional
 
 - `jsonnet_path` (List of String) Directories to search for Jsonnet imports, like the `-J` flag of `jsonnet` and `mixtool`. Usually the `vendor` directory of `jsonnet-bundler`.
+- `lint` (Boolean) Run `mixtool lint` on the mixin and fail on any finding. `alerts` and `rules` apply the Prometheus guidelines, which check the mixin alerts, so `rules` also fails on alert findings. `dashboards` applies the Grafana dashboard linter. A `.lint` file next to `source` configures exclusions.
 
 ### Read-Only
 

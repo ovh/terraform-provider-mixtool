@@ -78,6 +78,44 @@ func TestAccMixinDataSource_errors(t *testing.T) {
 	}
 }
 
+func TestAccMixinDataSource_lint(t *testing.T) {
+	dir := t.TempDir()
+	source := filepath.Join(dir, "mixin.libsonnet")
+	mixin := `{ prometheusAlerts: { groups: [{ name: "g", rules: [{ alert: "not_camel_case", expr: "1" }] }] } }`
+	if err := os.WriteFile(source, []byte(mixin), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	broken := filepath.Join(dir, "broken.libsonnet")
+	if err := os.WriteFile(broken, []byte(`{ prometheusAlerts: `), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	lintConfig := func(source string) string {
+		return fmt.Sprintf(`
+data "mixtool_alerts" "test" {
+  source = %[1]q
+  lint   = true
+}
+`, source)
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccMixinDataSourceConfig_alerts(source),
+			},
+			{
+				Config:      lintConfig(source),
+				ExpectError: regexp.MustCompile(`(?s)Error linting alerts.*not_camel_case`),
+			},
+			{
+				Config:      lintConfig(broken),
+				ExpectError: regexp.MustCompile(`Error generating alerts`),
+			},
+		},
+	})
+}
+
 func testAccCheckMixinIDIsOutputHash(name, output string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		attrs := s.RootModule().Resources[name].Primary.Attributes
@@ -95,4 +133,10 @@ data "mixtool_alerts" "test" {
   source = %[1]q
 }
 `, source)
+}
+
+func TestANSIEscape(t *testing.T) {
+	if got := ansiEscape.ReplaceAllString("\x1b[31m[alert-name-camelcase] bad\x1b[0m", ""); got != "[alert-name-camelcase] bad" {
+		t.Fatalf("ansiEscape left %q", got)
+	}
 }
