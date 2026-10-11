@@ -14,10 +14,8 @@ Read mixin and render rules as YAML using mixtool
 
 ```terraform
 data "mixtool_rules" "example" {
-  source = "testdata/mixin.libsonnet"
-  jsonnet_path = [
-    "testdata/vendor"
-  ]
+  source       = "${path.module}/mixin.libsonnet"
+  jsonnet_path = ["${path.module}/vendor"]
 }
 ```
 
@@ -26,11 +24,11 @@ data "mixtool_rules" "example" {
 
 ### Required
 
-- `source` (String) Source Jsonnet file.
+- `source` (String) Path to the mixin Jsonnet file. Terraform resolves a relative path from the working directory, not the module directory, so use `path.module` in modules.
 
 ### Optional
 
-- `jsonnet_path` (List of String) External variables providing value as a string.
+- `jsonnet_path` (List of String) Directories to search for Jsonnet imports, like the `-J` flag of `jsonnet` and `mixtool`. Usually the `vendor` directory of `jsonnet-bundler`.
 
 ### Read-Only
 

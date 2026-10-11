@@ -60,7 +60,7 @@ func NewDashboardsDataSource() datasource.DataSource {
 		kind:        "dashboards",
 		description: "Read mixin and render dashboards as JSON using mixtool",
 		output: schema.MapAttribute{
-			MarkdownDescription: "",
+			MarkdownDescription: "Generated Grafana dashboards as JSON strings, keyed by dashboard file name.",
 			Computed:            true,
 			ElementType:         types.StringType,
 		},
@@ -88,11 +88,11 @@ func (d *mixinDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				MarkdownDescription: "SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.",
 			},
 			"source": schema.StringAttribute{
-				MarkdownDescription: "Source Jsonnet file.",
+				MarkdownDescription: "Path to the mixin Jsonnet file. Terraform resolves a relative path from the working directory, not the module directory, so use `path.module` in modules.",
 				Required:            true,
 			},
 			"jsonnet_path": schema.ListAttribute{
-				MarkdownDescription: "External variables providing value as a string.",
+				MarkdownDescription: "Directories to search for Jsonnet imports, like the `-J` flag of `jsonnet` and `mixtool`. Usually the `vendor` directory of `jsonnet-bundler`.",
 				Optional:            true,
 				ElementType:         types.StringType,
 			},
