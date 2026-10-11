@@ -64,11 +64,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # list whatever Terraform versions here you would like to support
+        # Oldest supported, first with provider functions, latest.
         terraform:
           - "1.6.*"
-          - "1.7.*"
           - "1.8.*"
+          - "1.16.*"
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3

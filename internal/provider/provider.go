@@ -40,15 +40,19 @@ func (p *mixtoolProvider) Resources(ctx context.Context) []func() resource.Resou
 }
 
 func (p *mixtoolProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewDashboardsDataSource,
-		NewRulesDataSource,
-		NewAlertsDataSource,
+	var dataSources []func() datasource.DataSource
+	for _, k := range mixinKinds {
+		dataSources = append(dataSources, func() datasource.DataSource { return &mixinDataSource{k} })
 	}
+	return dataSources
 }
 
 func (p *mixtoolProvider) Functions(ctx context.Context) []func() function.Function {
-	return []func() function.Function{}
+	var functions []func() function.Function
+	for _, k := range mixinKinds {
+		functions = append(functions, func() function.Function { return &mixinFunction{k} })
+	}
+	return functions
 }
 
 func New(version string) func() provider.Provider {

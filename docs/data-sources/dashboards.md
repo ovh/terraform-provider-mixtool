@@ -14,10 +14,8 @@ Read mixin and render dashboards as JSON using mixtool
 
 ```terraform
 data "mixtool_dashboards" "example" {
-  source = "testdata/mixin.libsonnet"
-  jsonnet_path = [
-    "testdata/vendor"
-  ]
+  source       = "${path.module}/mixin.libsonnet"
+  jsonnet_path = ["${path.module}/vendor"]
 }
 ```
 
@@ -26,13 +24,14 @@ data "mixtool_dashboards" "example" {
 
 ### Required
 
-- `source` (String) Source Jsonnet file.
+- `source` (String) Path to the mixin Jsonnet file. Terraform resolves a relative path from the working directory, not the module directory, so use `path.module` in modules.
 
 ### Optional
 
-- `jsonnet_path` (List of String) External variables providing value as a string.
+- `jsonnet_path` (List of String) Directories to search for Jsonnet imports, like the `-J` flag of `jsonnet` and `mixtool`. Usually the `vendor` directory of `jsonnet-bundler`.
+- `lint` (Boolean) Run `mixtool lint` on the mixin and fail on any finding. `alerts` and `rules` apply the Prometheus guidelines, which check the mixin alerts, so `rules` also fails on alert findings. `dashboards` applies the Grafana dashboard linter. A `.lint` file next to `source` configures exclusions.
 
 ### Read-Only
 
-- `dashboards` (Map of String)
-- `id` (String) sha256 sum of the Jsonnet file
+- `dashboards` (Map of String) Generated Grafana dashboards as JSON strings, keyed by dashboard file name.
+- `id` (String) SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.
