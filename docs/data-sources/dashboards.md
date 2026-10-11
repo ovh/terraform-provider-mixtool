@@ -35,4 +35,4 @@ data "mixtool_dashboards" "example" {
 ### Read-Only
 
 - `dashboards` (Map of String)
-- `id` (String) sha256 sum of the Jsonnet file
+- `id` (String) SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.

@@ -85,7 +85,7 @@ func (d *mixinDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "sha256 sum of the Jsonnet file",
+				MarkdownDescription: "SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.",
 			},
 			"source": schema.StringAttribute{
 				MarkdownDescription: "Source Jsonnet file.",
@@ -125,9 +125,18 @@ func (d *mixinDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
+	id, err := hash(rendered)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("Error hashing %s", d.kind),
+			fmt.Sprintf("hashing %s from %s: %s", d.kind, source.ValueString(), err),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("source"), source)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("jsonnet_path"), jsonnetPath)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), hash(source.ValueString()))...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root(d.kind), rendered)...)
 }
 
@@ -145,7 +154,17 @@ func toYAML(rendered []byte, err error) (any, error) {
 	return string(out), err
 }
 
-func hash(s string) string {
-	sha := sha256.Sum256([]byte(s))
-	return hex.EncodeToString(sha[:])
+// hash hashes string outputs raw, so users can match id against the output.
+// json.Marshal sorts map keys, so the dashboards map hashes deterministically.
+func hash(rendered any) (string, error) {
+	b, ok := rendered.(string)
+	raw := []byte(b)
+	if !ok {
+		var err error
+		if raw, err = json.Marshal(rendered); err != nil {
+			return "", err
+		}
+	}
+	sha := sha256.Sum256(raw)
+	return hex.EncodeToString(sha[:]), nil
 }

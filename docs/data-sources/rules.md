@@ -34,5 +34,5 @@ data "mixtool_rules" "example" {
 
 ### Read-Only
 
-- `id` (String) sha256 sum of the Jsonnet file
+- `id` (String) SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.
 - `rules` (String) Generated Prometheus rules based on the given mixins

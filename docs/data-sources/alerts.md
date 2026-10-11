@@ -35,4 +35,4 @@ data "mixtool_alerts" "example" {
 ### Read-Only
 
 - `alerts` (String) Generated Prometheus alerts based on the given mixins
-- `id` (String) sha256 sum of the Jsonnet file
+- `id` (String) SHA-256 of the rendered output. It changes when the mixin or any file it imports changes.
