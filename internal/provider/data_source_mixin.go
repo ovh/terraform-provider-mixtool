@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var _ datasource.DataSource = &mixinDataSource{}
+var _ datasource.DataSourceWithValidateConfig = &mixinDataSource{}
 
 type mixinDataSource struct {
 	mixinKind
@@ -50,6 +50,14 @@ func (d *mixinDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			d.kind: d.output,
 		},
+	}
+}
+
+func (d *mixinDataSource) ValidateConfig(ctx context.Context, req datasource.ValidateConfigRequest, resp *datasource.ValidateConfigResponse) {
+	var source types.String
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("source"), &source)...)
+	if !source.IsUnknown() && !source.IsNull() && source.ValueString() == "" {
+		resp.Diagnostics.AddAttributeError(path.Root("source"), "Invalid source", "source must not be empty.")
 	}
 }
 

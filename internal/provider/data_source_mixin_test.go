@@ -195,6 +195,26 @@ data "mixtool_%[1]s" "test" {
 	}
 }
 
+func TestMixinDataSource_emptySource(t *testing.T) {
+	for _, k := range mixinKindTests(t) {
+		t.Run(k.kind, func(t *testing.T) {
+			resource.UnitTest(t, resource.TestCase{
+				ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+				Steps: []resource.TestStep{
+					{
+						Config: fmt.Sprintf(`
+data "mixtool_%[1]s" "test" {
+  source = ""
+}
+`, k.kind),
+						ExpectError: regexp.MustCompile(`(?s)Invalid source.*source must not be empty`),
+					},
+				},
+			})
+		})
+	}
+}
+
 func TestMixinFunction_errors(t *testing.T) {
 	for _, k := range mixinKindTests(t) {
 		for name, tc := range renderErrorCases(t) {

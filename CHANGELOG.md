@@ -11,6 +11,7 @@ FEATURES:
 
 BUG FIXES:
 
+* data-source/mixtool_alerts, data-source/mixtool_rules, data-source/mixtool_dashboards: an empty `source` fails at validation or plan with an attribute error, not later inside mixtool.
 * data-source/mixtool_alerts, data-source/mixtool_rules, data-source/mixtool_dashboards: `id` is the SHA-256 of the rendered output, not of the `source` path, so it changes when the mixin or an import changes. Existing users see a one-time `id` change on upgrade.
 
 ## 0.1.0 (November 15, 2022)
