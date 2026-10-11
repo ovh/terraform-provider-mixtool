@@ -1,5 +1,9 @@
 ## Unreleased
 
+BREAKING CHANGES:
+
+* Terraform 1.6 is the oldest tested version. Earlier versions are no longer tested.
+
 FEATURES:
 
 * data-source/mixtool_alerts, data-source/mixtool_rules, data-source/mixtool_dashboards: optional `lint` attribute runs `mixtool lint` and fails on any finding.

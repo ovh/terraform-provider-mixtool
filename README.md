@@ -26,7 +26,7 @@ output "alerts" {
 
 ## Requirements
 
--	[Terraform](https://www.terraform.io/downloads.html) >= 1.1.6
+-	[Terraform](https://www.terraform.io/downloads.html) >= 1.6
 -	[Go](https://golang.org/doc/install) >= 1.19
 
 ## Building The Provider
