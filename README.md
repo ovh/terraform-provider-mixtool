@@ -16,6 +16,14 @@ data "mixtool_alerts" "example" {
 
 If you set `lint = true`, the plan fails when `mixtool lint` reports a finding. The [documentation](./docs) describes each attribute.
 
+With Terraform 1.8 or later, you can also render a mixin inline with the provider functions `provider::mixtool::alerts`, `provider::mixtool::rules` and `provider::mixtool::dashboards`:
+
+```terraform
+output "alerts" {
+  value = provider::mixtool::alerts("${path.module}/mixin.libsonnet", ["${path.module}/vendor"])
+}
+```
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 1.1.6

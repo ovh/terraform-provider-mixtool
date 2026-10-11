@@ -19,65 +19,8 @@ import (
 
 var _ datasource.DataSource = &mixinDataSource{}
 
-// mixinDataSource renders one output kind of a mixin. The kind is both the
-// type name suffix and the name of the computed output attribute.
 type mixinDataSource struct {
-	kind        string
-	description string
-	output      schema.Attribute
-	lint        mixer.LintOptions
-	render      func(source string, opts mixer.GenerateOptions) (any, error)
-}
-
-func NewAlertsDataSource() datasource.DataSource {
-	return &mixinDataSource{
-		kind:        "alerts",
-		lint:        mixer.LintOptions{Prometheus: true},
-		description: "Read mixin and render alerts as YAML using mixtool",
-		output: schema.StringAttribute{
-			MarkdownDescription: "Generated Prometheus alerts based on the given mixins",
-			Computed:            true,
-		},
-		render: func(source string, opts mixer.GenerateOptions) (any, error) {
-			return toYAML(mixer.GenerateAlerts(source, opts))
-		},
-	}
-}
-
-func NewRulesDataSource() datasource.DataSource {
-	return &mixinDataSource{
-		kind:        "rules",
-		lint:        mixer.LintOptions{Prometheus: true},
-		description: "Read mixin and render rules as YAML using mixtool",
-		output: schema.StringAttribute{
-			MarkdownDescription: "Generated Prometheus rules based on the given mixins",
-			Computed:            true,
-		},
-		render: func(source string, opts mixer.GenerateOptions) (any, error) {
-			return toYAML(mixer.GenerateRules(source, opts))
-		},
-	}
-}
-
-func NewDashboardsDataSource() datasource.DataSource {
-	return &mixinDataSource{
-		kind:        "dashboards",
-		lint:        mixer.LintOptions{Grafana: true},
-		description: "Read mixin and render dashboards as JSON using mixtool",
-		output: schema.MapAttribute{
-			MarkdownDescription: "Generated Grafana dashboards as JSON strings, keyed by dashboard file name.",
-			Computed:            true,
-			ElementType:         types.StringType,
-		},
-		render: func(source string, opts mixer.GenerateOptions) (any, error) {
-			dashboards, err := mixer.GenerateDashboards(source, opts)
-			rendered := make(map[string]string, len(dashboards))
-			for name, content := range dashboards {
-				rendered[name] = strings.TrimSpace(string(content))
-			}
-			return rendered, err
-		},
-	}
+	mixinKind
 }
 
 func (d *mixinDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -154,6 +97,23 @@ func (d *mixinDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("lint"), lint)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root(d.kind), rendered)...)
+}
+
+func renderAlerts(source string, opts mixer.GenerateOptions) (any, error) {
+	return toYAML(mixer.GenerateAlerts(source, opts))
+}
+
+func renderRules(source string, opts mixer.GenerateOptions) (any, error) {
+	return toYAML(mixer.GenerateRules(source, opts))
+}
+
+func renderDashboards(source string, opts mixer.GenerateOptions) (any, error) {
+	dashboards, err := mixer.GenerateDashboards(source, opts)
+	rendered := make(map[string]string, len(dashboards))
+	for name, content := range dashboards {
+		rendered[name] = strings.TrimSpace(string(content))
+	}
+	return rendered, err
 }
 
 // ansiEscape strips the colors mixer.Lint adds when stdout is a terminal, as under go test.

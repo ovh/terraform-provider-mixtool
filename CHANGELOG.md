@@ -3,6 +3,7 @@
 FEATURES:
 
 * data-source/mixtool_alerts, data-source/mixtool_rules, data-source/mixtool_dashboards: optional `lint` attribute runs `mixtool lint` and fails on any finding.
+* function/alerts, function/rules, function/dashboards: render a mixin without a data block. Requires Terraform 1.8 or later.
 
 BUG FIXES:
 
